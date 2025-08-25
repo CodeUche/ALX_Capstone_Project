@@ -1,0 +1,33 @@
+<!-- vuln_hunter/templates/vuln_hunter/scan_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Scan</title>
+</head>
+<body>
+    <h1>Submit a Vulnerability Scan</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="target">IP / Domain:</label>
+        <input type="text" name="target" id="target" required><br><br>
+
+        <label for="scan_type">Scan Type:</label>
+        <select name="scan_type" id="scan_type">
+            <option value="fast">Fast</option>
+            <option value="aggressive">Aggressive</option>
+            <option value="udp">UDP</option>
+            <option value="full">Full</option>
+            <option value="stealth">Stealth</option>
+            <option value="whatweb">WhatWeb</option>
+        </select><br><br>
+
+        <button type="submit">Start Scan</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!-- vuln_hunter/templates/vuln_hunter/scan_result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Result</title>
+</head>
+<body>
+    <h1>Scan Result</h1>
+
+    {% if scan_result %}
+        <pre>{{ scan_result|safe }}</pre>
+    {% else %}
+        <p>No result yet. Please check back later.</p>
+    {% endif %}
+
+    <a href="{% url 'scan_target' %}">Submit another scan</a>
+</body>
+</html>

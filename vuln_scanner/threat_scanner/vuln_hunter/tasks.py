@@ -1,5 +1,8 @@
-import nmap
 from celery import Celery, shared_task
+import nmap
+import subprocess
+from .models import ScanJob
+from django.utils import timezone
 
 
 # All the scan profile dictionary
@@ -12,23 +15,51 @@ SCAN_PROFILES = {
 }
 
 
-@shared_task
-def run_nmap_scan(target, profile="fast"):
-    nm = nmap.PortScanner()
+@shared_task(bind=True)
+def run_nmap_scan(self, scan_id):
+    scan = ScanJob.objects.get(id=scan_id)
+    scan.start_time = timezone.now()
+    scan.status = "RUNNING"
+    scan.save()
 
-    if profile not in SCAN_PROFILES:
-        raise ValueError(
-            f"Invalid scan profile: {profile}. Available profiles to choose from: {list(SCAN_PROFILES.keys())}"
-        )
+    try:
+        nm = nmap.PortScanner()
+        args = SCAN_PROFILES(scan.scan_type, "-T4 -F")
+        result = nm.scan(hosts=scan.target, arguments=args)
+        scan.result = result
+        scan.status = "COMPLETED"
+        scan.end_time = timezone.now()
 
-    args = SCAN_PROFILES[profile]
-    result = nm.scan(hosts=target, arguments=args)
-    return result
+    except Exception as e:
+        scan.status = "FAILED"
+        scan.result = str(e)
+
+    scan.completed_at = timezone.now()
+    scan.save()
+    return scan.result
 
 
-# Fast scan
-run_nmap_scan.delay("192.168.1.1", "fast")
+@shared_task(bind=True)
+def run_whatweb_scan(self, scan_id):
 
-# Aggressive scan
-run_nmap_scan.delay("alx-africa.com", "aggressive")
+    try:
+        scan = ScanJob.Objects.get(id=scan_id)
+        scan.status = "COMPLETED"
+        scan.end_time = timezone.now()
+        scan.save()
 
+        result = subprocess.check_output(
+            ["whatweb", scan.target], stderr=subprocess.STDOUT
+        ).decode("utf-8")
+
+        scan.result = result
+        scan.status = "COMPLETED"
+        scan.end_time = timezone.now()
+
+    except Exception as e:
+        scan.status = "FAILED"
+        scan.result = str(e)
+
+    scan.completed_at = timezone.now()
+    scan.save()
+    return scan.result

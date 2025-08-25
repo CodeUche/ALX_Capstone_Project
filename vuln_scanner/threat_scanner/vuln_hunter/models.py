@@ -16,13 +16,22 @@ class User(models.Model):
 
 
 class ScanJob(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('RUNNING', 'Running'),
+        ('COMPLETED', 'Completed'),
+        ('FAILED', 'Faled'),
+    ]
+
     username = models.ForeignKey(User, on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True, unique=True)
     target = models.URLField()
     scan_type = models.CharField(max_length=100)
-    status = models.CharField(max_length=100)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='PENDING')
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(auto_now=True)
     task_id = models.CharField(max_length=100)
+    result = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.scan_type} on {self.target} ({self.status})"

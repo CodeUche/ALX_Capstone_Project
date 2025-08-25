@@ -5,12 +5,11 @@
 [![Celery](https://img.shields.io/badge/Celery-5.x-%23A0C238.svg)](https://docs.celeryq.dev/)
 [![Redis](https://img.shields.io/badge/Redis-6.x-red.svg)](https://redis.io/)
 
-A quickstart guide to integrating **Celery** with **Django** using **Redis** as both the broker and result backend.
+A quickstart guide to integrating Celery with Django using Redis as both the broker and result backend.
 This setup allows you to run background tasks, offload heavy processing, and schedule jobs.
 
 
 # Prerequisites
-
 * Python 3.8+
 * Django project installed
 * Redis installed and running
@@ -22,21 +21,17 @@ Running scans can sometimes take time and a single user might be required to run
 
 
 # 1. Install Dependencies
-
 pip install celery[redis] redis
 
 
 # 2. Install and Run Redis
-
-I used Docker.
+I installed and used docker.
 
 Run Redis:
-
 redis-server
 
 
 # 3. Configure Celery
-
 Created `celery.py` inside my project folder:
 # project/celery.py
 
@@ -51,7 +46,6 @@ Created `celery.py` inside my project folder:
 
 
 # 4. Update `__init__.py`
-
 In project/init.py:
 
 `from .celery import app as celery_app`
@@ -59,9 +53,7 @@ In project/init.py:
 `__all__ = ('celery_app',)`
 
 
-
 # 5. Configure `settings.py`
-
 `CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'`
 `CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'`
 `CELERY_ACCEPT_CONTENT = ['json']`
@@ -71,7 +63,6 @@ In project/init.py:
 
 
 # 6. Create a Task
-
 Inside myapp/tasks.py:
 
 `from celery import shared_task`
@@ -84,12 +75,10 @@ Inside myapp/tasks.py:
 
 
 # 7. Run Celery Worker
-
 `celery -A project worker --loglevel=info`
 
 
 # 8. Call the Task
-
 `from vul_hunter.tasks import add`
 
 # Run asynchronously

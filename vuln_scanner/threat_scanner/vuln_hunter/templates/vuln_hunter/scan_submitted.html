@@ -1,0 +1,31 @@
+<!-- vuln_hunter/templates/vuln_hunter/scan_submitted.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Submitted</title>
+    <script>
+        // Polling function to check status every 3 seconds
+        function checkStatus() {
+            fetch(`/scan/status/{{ task_id }}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'SUCCESS' || data.status === 'FAILURE') {
+                        // Redirect to results page
+                        window.location.href = `/scan/result/{{ task_id }}/`;
+                    } else {
+                        document.getElementById('status').innerText = data.status;
+                        setTimeout(checkStatus, 3000);
+                    }
+                });
+        }
+
+        window.onload = checkStatus;
+    </script>
+</head>
+<body>
+    <h1>Scan Submitted!</h1>
+    <p>Task ID: {{ task_id }}</p>
+    <p>Status: <span id="status">PENDING</span></p>
+</body>
+</html>
