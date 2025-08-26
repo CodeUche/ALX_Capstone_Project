@@ -4,16 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Scan Result</title>
+    <link rel="stylesheet" href="{% static 'vuln_hunter/css/scan_result.css' %}">
 </head>
 <body>
-    <h1>Scan Result</h1>
+    <div class="container">
+        <h1 class="title">🔍 Scan Result</h1>
 
-    {% if scan_result %}
-        <pre>{{ scan_result|safe }}</pre>
-    {% else %}
-        <p>No result yet. Please check back later.</p>
-    {% endif %}
+        <div class="result-box">
+            {% if scan_result %}
+                <pre class="result-text">{{ scan_result|safe }}</pre>
+            {% else %}
+                <p class="no-result">⚠️ No result yet. Please check back later.</p>
+            {% endif %}
+        </div>
 
-    <a href="{% url 'scan_target' %}">Submit another scan</a>
+        <div class="actions">
+            <a href="{% url 'scan_target' %}" class="btn">Submit Another Scan</a>
+        </div>
+    </div>
 </body>
 </html>

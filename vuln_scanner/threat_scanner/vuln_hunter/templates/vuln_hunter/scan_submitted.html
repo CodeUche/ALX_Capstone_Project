@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Scan Submitted</title>
+    <link rel="stylesheet" href="{% static 'vuln_hunter/css/styles.css' %}">
     <script>
-        // Polling function to check status every 3 seconds
         function checkStatus() {
             fetch(`/scan/status/{{ task_id }}/`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'SUCCESS' || data.status === 'FAILURE') {
-                        // Redirect to results page
                         window.location.href = `/scan/result/{{ task_id }}/`;
                     } else {
                         document.getElementById('status').innerText = data.status;
@@ -19,13 +18,20 @@
                     }
                 });
         }
-
         window.onload = checkStatus;
     </script>
 </head>
 <body>
-    <h1>Scan Submitted!</h1>
-    <p>Task ID: {{ task_id }}</p>
-    <p>Status: <span id="status">PENDING</span></p>
+    <div class="container">
+        <h1 class="title">✅ Scan Submitted!</h1>
+
+        <div class="card">
+            <p><strong>Task ID:</strong> {{ task_id }}</p>
+            <p><strong>Status:</strong> <span id="status" class="status pending">PENDING</span></p>
+            <div class="spinner" id="spinner"></div>
+        </div>
+
+        <a href="{% url 'scan_target' %}" class="btn">🔄 Start New Scan</a>
+    </div>
 </body>
 </html>
