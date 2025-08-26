@@ -17,17 +17,17 @@ class User(models.Model):
 
 class ScanJob(models.Model):
     STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('RUNNING', 'Running'),
-        ('COMPLETED', 'Completed'),
-        ('FAILED', 'Faled'),
+        ("PENDING", "Pending"),
+        ("RUNNING", "Running"),
+        ("COMPLETED", "Completed"),
+        ("FAILED", "Faled"),
     ]
 
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     id = models.AutoField(primary_key=True, unique=True)
     target = models.URLField()
     scan_type = models.CharField(max_length=100)
-    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default="PENDING")
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(auto_now=True)
     task_id = models.CharField(max_length=100)

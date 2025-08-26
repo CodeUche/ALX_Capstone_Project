@@ -1,0 +1,12 @@
+from vuln_hunter.tasks import run_nmap_scan
+from vuln_hunter.models import ScanJob
+from django.utils import timezone
+
+scan = ScanJob.objects.create(
+    target="scanme.nmap.org",
+    scan_type="fast",
+    status="RUNNING",
+    start_time=timezone.now(),
+)
+result = run_nmap_scan.delay(scan.id)
+print(result.id)
