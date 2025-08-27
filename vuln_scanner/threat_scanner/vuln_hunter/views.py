@@ -1,8 +1,4 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .models import ScanJob
-from .serializers import ScanJobSerializer
 from django.shortcuts import render, redirect
 from .tasks import run_nmap_scan, run_whatweb_scan
 from django.http import JsonResponse, HttpResponse
@@ -17,7 +13,7 @@ def scan_target(request):
 
         if not target:
             return render(
-                request, "scan_target.html", {"error": "Please provide a target."}
+                request, "scan_form.html", {"error": "Please provide a target."}
             )
 
         # Save scan job
@@ -37,26 +33,38 @@ def scan_target(request):
         return redirect("scan_submitted", task_id=task.id)
 
     # GET request → just render scan form
-    return render(request, "scan_target.html")
+    return render(request, "scan_form.html")
 
 
 def scan_submitted(request, task_id):
     """Renders page after scan submission."""
-    return render(request, "vuln_hunter/scan_submitted.html", {"task_id": task_id})
+    return render(request, "scan_submitted.html", {"task_id": task_id})
 
 
 def scan_status(request, task_id):
     """Check the current status of the Celery task."""
-    result = AsyncResult(task_id)
-    return JsonResponse({"status": result.status})
+    task = AsyncResult(task_id)
+    if task.state == "SUCCESS":
+        # Task has completed, return the result
+        return JsonResponse({"status": "SUCCESS", "result": task.result})
+    elif task.state == "FAILURE":
+        # Task has failed
+        return JsonResponse({"status": "FAILURE"})
+    else:
+        # Task is still in progress
+        return JsonResponse({"status": "PENDING"})
 
 
 def scan_result(request, task_id):
     """Return the result once the scan is done."""
     result = AsyncResult(task_id)
     if result.ready():
-        return render(
-            request, "vuln_hunter/scan_result.html", {"scan_result": result.result}
-        )
+        scan_data = result.result
+
+        # Fallback in case of errors
+        if not isinstance(scan_data, dict):
+            scan_data = {"error": scan_data}
+
+        return render(request, "scan_result.html", {"scan_result": result.result})
     else:
         return HttpResponse("Scan not finished yet. Please wait.")

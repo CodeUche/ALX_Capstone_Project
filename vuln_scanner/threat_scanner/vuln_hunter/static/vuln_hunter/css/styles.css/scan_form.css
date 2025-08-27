@@ -1,0 +1,93 @@
+/* Global Dark Theme */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background-color: #0f111a;
+    color: #cfd4e3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Centered container */
+.container {
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+}
+
+/* Header */
+header .logo {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #6f9eff;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-size: 0.9rem;
+    color: #8e97ad;
+    margin-bottom: 2rem;
+}
+
+/* Form box */
+.form-box {
+    background: #1a1d2b;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.6);
+}
+
+/* Labels */
+label {
+    display: block;
+    text-align: left;
+    margin: 1rem 0 0.4rem;
+    font-weight: bold;
+    color: #cfd4e3;
+}
+
+/* Inputs & dropdown */
+input[type="text"], select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #2b2f44;
+    border-radius: 8px;
+    background: #0f111a;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s;
+}
+
+input[type="text"]:focus, select:focus {
+    border: 1px solid #6f9eff;
+}
+
+/* Button */
+button {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.9rem;
+    background: #6f9eff;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #557cd6;
+}
+
+/* Error Message */
+.error {
+    color: #ff4d6d;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}

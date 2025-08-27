@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Result</title>
+    <link rel="stylesheet" href="{% static 'vuln_hunter/css/scan_result.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1 class="title">🔍 Scan Results for {{ scan_result.target }}</h1>
+    <p><strong>Scan Type:</strong> {{ scan_result.scan_type|capfirst }}</p>
+
+    {% if scan_result.scan_type == "nmap" %}
+        {% if scan_result.result_json.ports %}
+            <table class="scan-table">
+                <thead>
+                <tr>
+                    <th>Port</th>
+                    <th>State</th>
+                    <th>Service</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for port in scan_result.result_json.ports %}
+                    <tr>
+                        <td>{{ port.number }}</td>
+                        <td>{{ port.state }}</td>
+                        <td>{{ port.service }}</td>
+                        <td>{{ port.description }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-result">⚠️ No open ports found.</p>
+        {% endif %}
+    {% elif scan_result.scan_type == "whatweb" %}
+        {% for item in scan_result.result_json.results %}
+            <h3>{{ item.url }}</h3>
+            {% if item.plugins %}
+                <ul>
+                    {% for plugin in item.plugins %}
+                        <li>{{ plugin.name }} - {{ plugin.version }} - {{ plugin.description }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No plugins detected.</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <!-- Optional raw output for logs/debugging -->
+    <h2>Raw Output</h2>
+    <pre>{{ scan_result.result_text }}</pre>
+
+    <div class="actions">
+        <a href="{% url 'scan_form' %}" class="btn">Submit Another Scan</a>
+    </div>
+</div>
+</body>
+</html>

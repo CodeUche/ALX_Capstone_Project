@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Submitted</title>
+    <link rel="stylesheet" href="{% static 'vuln_hunter/css/styles.css' %}">
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const taskId = "{{ task_id }}";
+            const statusElement = document.getElementById('status');
+            const spinnerElement = document.getElementById('spinner');
+
+            const pollStatus = setInterval(function() {
+                fetch(`/scan/status/${taskId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'SUCCESS') {
+                            clearInterval(pollStatus);
+                            window.location.href = `/scan/result/${taskId}/`;
+                        } else if (data.status === 'FAILURE') {
+                            clearInterval(pollStatus);
+                            statusElement.textContent = 'Scan failed.';
+                            spinnerElement.style.display = 'none';
+                        } else {
+                            statusElement.textContent = 'PENDING';
+                        }
+                    })
+                    .catch(error => {
+                        clearInterval(pollStatus);
+                        statusElement.textContent = 'An error occurred.';
+                        spinnerElement.style.display = 'none';
+                        console.error('Error:', error);
+                    });
+            }, 3000); // Poll every 3 seconds
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Scan Submitted!</h1>
+        <div class="card">
+            <p><strong>Task ID:</strong> {{ task_id }}</p>
+            <p><strong>Status:</strong> <span id="status" class="status pending">PENDING</span></p>
+            <div class="spinner" id="spinner"></div>
+        </div>
+        <a href="{% url 'scan_form' %}" class="btn">Start new scan</a>
+    </div>
+</body>
+</html>
