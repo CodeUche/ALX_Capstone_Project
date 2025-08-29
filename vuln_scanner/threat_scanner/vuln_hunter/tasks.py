@@ -39,7 +39,7 @@ SCAN_PROFILES = {
 
 # Define a function to run Nmap scan
 @shared_task
-def run_nmap_scan(self, scan_id, scan_type):
+def run_nmap_scan(scan_id, scan_type):
     scan = ScanJob.objects.get(id=scan_id)
     scan.start_time = timezone.now()
     scan.status = "RUNNING"
@@ -48,10 +48,9 @@ def run_nmap_scan(self, scan_id, scan_type):
     if shutil.which("nmap") is None:
         scan.status = "FAILED"
         scan.result_text = "Nmap is not installed"
-        scan.result_json = {"error": "Nmap is not installed"}
         scan.end_time = timezone.now()
         scan.save()
-        return scan.result_json
+        return {"error": "Nmap is not installed"}
 
     try:
         nm = nmap.PortScanner()

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt",
     "vuln_hunter",
 ]
 
@@ -87,6 +88,14 @@ DATABASES = {
     }
 }
 
+
+# DRF Authentication classes
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
 # Celery Settings
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"  # This is Redis DB 0
 CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
@@ -131,7 +140,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "vuln_hunter/static/vuln_hunter")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "vuln_hunter/static")]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 

@@ -4,8 +4,7 @@ from django.utils import timezone
 
 scan = ScanJob.objects.create(
     target="google.com",
-    scan_type="fast",
-    start_time=timezone.now(),
+    scan_type="full",
 )
 result = run_nmap_scan.delay(scan.id)
 print(result.id)
