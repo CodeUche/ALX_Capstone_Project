@@ -24,9 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-iem6xgg(mftncy(=t))ez+4znvgugczr1fk_5%gi*q_#orv=90"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["codeuche.pythonanywhere.com"]
+CSRF_TRUSTED_ORIGINS = ["https://codeuche.pythonanywhere.com"]
 
 
 # Application definition
