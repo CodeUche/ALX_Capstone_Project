@@ -4,6 +4,7 @@ import subprocess
 from .models import ScanJob
 from django.utils import timezone
 import shutil
+import re
 
 # Plugin definitions
 
@@ -117,9 +118,15 @@ def run_whatweb_scan(self, scan_id):
     scan.save()
 
     try:
-        result = subprocess.check_output(
+        result_bytes = subprocess.check_output(
             ["whatweb", scan.target], stderr=subprocess.STDOUT
-        ).decode("utf-8")
+        )
+
+        # Convert bytes to string
+        result = result.decode("utf-8", errors="replace")
+
+        # Clean ANSI/Non-printable characters
+        result = re.sub(r"\x1b[@-_][0-?]*[ -/]*[@-~]", "", result)
 
         scan.result_text = result
         scan.result_json = {"raw": result.split("\n")}
