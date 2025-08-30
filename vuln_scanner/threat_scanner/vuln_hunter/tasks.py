@@ -1,10 +1,9 @@
 from celery import shared_task
-import nmap, json
+import nmap
 import subprocess
 from .models import ScanJob
 from django.utils import timezone
 import shutil
-
 
 # Plugin definitions
 
@@ -45,21 +44,21 @@ def run_nmap_scan(scan_id, scan_type):
     scan.status = "RUNNING"
     scan.save()
 
+    # Check if nmap is installed
     if shutil.which("nmap") is None:
         scan.status = "FAILED"
         scan.result_text = "Nmap is not installed"
+        scan.result_json = {"error": "Nmap is not installed"}
         scan.end_time = timezone.now()
         scan.save()
-        return {"error": "Nmap is not installed"}
+        return scan.result_json
 
     try:
         nm = nmap.PortScanner()
         args = SCAN_PROFILES.get(scan_type, "-T4 -F")
         nm.scan(hosts=scan.target, arguments=args)
 
-        # For structured frontend display
         ports = []
-        # For human-readable text
         report_lines = []
 
         for host in nm.all_hosts():
@@ -84,14 +83,21 @@ def run_nmap_scan(scan_id, scan_type):
 
             report_lines.append("-" * 40)
 
-        # Save both formats in DB
+        # Save both formats to DB
         scan.result_text = "\n".join(report_lines)
-        scan.result_json = {"target": scan.target, "scan_type": "nmap", "ports": ports}
+        scan.result_json = {
+            "target": scan.target,
+            "scan_type": "nmap",
+            "ports": ports,
+        }
         scan.status = "COMPLETED"
         scan.end_time = timezone.now()
         scan.save()
 
-        return scan.result_json
+        return {
+            "json": scan.result_json,
+            "text": scan.result_text,
+        }
 
     except Exception as e:
         scan.status = "FAILED"
@@ -115,11 +121,15 @@ def run_whatweb_scan(self, scan_id):
             ["whatweb", scan.target], stderr=subprocess.STDOUT
         ).decode("utf-8")
 
-        scan.result = result
+        scan.result_text = result
+        scan.result_json = {"raw": result.split("\n")}
         scan.status = "COMPLETED"
         scan.end_time = timezone.now()
         scan.save()
-        return result
+        return {
+            "json": scan.result_json,
+            "text": scan.result_text,
+        }
 
     except Exception as e:
         scan.status = "FAILED"

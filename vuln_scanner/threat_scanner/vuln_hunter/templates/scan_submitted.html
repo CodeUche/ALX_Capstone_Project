@@ -10,22 +10,22 @@
     <h1>Scan in Progress...</h1>
     <div id="status"></div>
     <script>
-        const taskId = "{{ task_id }}";  // Task ID from Django context
+        const scanId = "{{ scan_id }}";  // Task ID from Django context
         function checkScanStatus() {
-            fetch(`status/${taskId}/`)
+            fetch(`status/${scanId}/`)
                 .then(response => response.json())
                 .then(data => {
                     const statusDiv = document.getElementById("status");
 
                     if (data.status === "COMPLETED") {
-                        statusDiv.innerHTML = "Scan Completed!";
+                        statusDiv.innerHTML = "✅ Scan Completed!";
                         // Optionally redirect to result page after completion
-                        window.location.href = `result/${taskId}/`;
+                        window.location.href = `scan/result/${scanId}/`;
                     } else if (data.status === "RUNNING") {
                         statusDiv.innerHTML = "Scan is still running... Please wait.";
                         setTimeout(checkScanStatus, 5000);  // Poll every 5 seconds
                     } else if (data.status === "FAILED") {
-                        statusDiv.innerHTML = "Scan failed. Please try again later.";
+                        statusDiv.innerHTML = "❌ Scan failed. Please try again later.";
                     }
                 })
                 .catch(error => {

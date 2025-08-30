@@ -20,7 +20,7 @@ class ScanJob(models.Model):
         ("PENDING", "Pending"),
         ("RUNNING", "Running"),
         ("COMPLETED", "Completed"),
-        ("FAILED", "Faled"),
+        ("FAILED", "Failed"),
     ]
 
     username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
